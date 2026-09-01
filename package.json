@@ -1,0 +1,34 @@
+{
+  "name": "galaxy-page",
+  "version": "1.0.0",
+  "description": "把知识点数据变成可分享的交互式星系页面 — 输入 typed JSON 规范，输出自包含 HTML",
+  "type": "module",
+  "bin": {
+    "galaxy-page": "bin/galaxy-page.mjs"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "assets/",
+    "schemas/",
+    "references/",
+    "examples/demo.json",
+    "SKILL.md"
+  ],
+  "scripts": {
+    "demo": "node bin/galaxy-page.mjs demo",
+    "validate": "node bin/galaxy-page.mjs validate examples/demo.json",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "knowledge-graph",
+    "visualization",
+    "galaxy",
+    "canvas",
+    "cli"
+  ],
+  "license": "MIT"
+}

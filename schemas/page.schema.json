@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://knowlink.local/galaxy-page.schema.json",
+  "title": "Galaxy Page Specification",
+  "description": "KnowLink 知识星系页面生成器的输入规范。定义知识点数据 + 页面配置，由 galaxy-page render 生成自包含 HTML。",
+  "type": "object",
+  "required": ["meta", "points"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["title"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "description": "页面标题（显示在顶栏）" },
+        "subtitle": { "type": "string", "description": "可选副标题，不要复述标题" },
+        "locale": { "type": "string", "enum": ["zh-CN", "en"], "default": "zh-CN", "description": "Viewer UI 语言" },
+        "author": { "type": "string", "description": "作者/来源标注" },
+        "date": { "type": "string", "description": "生成日期（ISO 或自由文本）" }
+      }
+    },
+    "points": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "required": ["title"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "description": "稳定 ID，缺省时自动生成 kp-<ts>-<rand>" },
+          "title": { "type": "string", "minLength": 1, "description": "短概念标题（≤5 词最佳，作为节点标签）" },
+          "text": { "type": "string", "description": "全文/详情，用于关键词连线与详情面板" },
+          "url": { "type": "string", "description": "来源 URL（同源/同域连线依据）" },
+          "source": { "type": "string", "description": "来源名称（如 论文A / 网站B）" },
+          "page": { "type": "integer", "minimum": 0, "description": "页码（PDF 跳转）" }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "description": "可选：显式边。不提供时自动计算（同源/同域/关键词重叠）。",
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "additionalProperties": false,
+        "properties": {
+          "from": { "type": "string", "description": "起点 point id" },
+          "to": { "type": "string", "description": "终点 point id" },
+          "strength": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+          "reason": { "type": "string", "enum": ["same-source", "same-domain", "keyword-overlap", "ai-inferred"], "default": "ai-inferred" }
+        }
+      }
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "theme": { "type": "string", "enum": ["dark", "light"], "default": "dark" },
+        "showSearch": { "type": "boolean", "default": true },
+        "showLegend": { "type": "boolean", "default": true },
+        "showStats": { "type": "boolean", "default": true },
+        "interactive": { "type": "boolean", "default": true, "description": "false 时生成静态快照（无 hover/缩放）" },
+        "width": { "type": "integer", "minimum": 400, "default": 1200, "description": "画布逻辑宽度" },
+        "height": { "type": "integer", "minimum": 300, "default": 800, "description": "画布逻辑高度" },
+        "seed": { "type": "string", "description": "布局随机种子（缺省用 meta.title hash，保证确定性）" }
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+# 生成物（由 `node bin/galaxy-page.mjs demo` 生成）
+examples/out/
+
+# Node
+node_modules/
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db

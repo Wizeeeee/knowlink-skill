@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "title": "深度学习概念图谱",
+    "subtitle": "从注意力机制到扩散模型的核心概念",
+    "locale": "zh-CN",
+    "author": "KnowLink Galaxy",
+    "date": "2026-08-30"
+  },
+  "points": [
+    { "id": "attention", "title": "注意力机制", "text": "Attention mechanism 让模型动态聚焦输入中最重要的部分，是 Transformer 的核心。通过 Query/Key/Value 计算加权求和。", "url": "https://arxiv.org/abs/1706.03762", "source": "Attention Is All You Need" },
+    { "id": "transformer", "title": "Transformer", "text": "完全基于注意力机制的序列模型，抛弃 RNN/CNN，支持并行训练。由多头注意力 + 前馈网络 + 位置编码组成。", "url": "https://arxiv.org/abs/1706.03762", "source": "Attention Is All You Need" },
+    { "id": "self-attention", "title": "自注意力", "text": "Self-attention 让序列中每个 token 与其他所有 token 交互，捕捉长距离依赖。复杂度 O(n²)。", "url": "https://arxiv.org/abs/1706.03762", "source": "Attention Is All You Need" },
+    { "id": "bert", "title": "BERT", "text": "双向 Transformer 编码器，通过掩码语言模型预训练，在 NLP 任务上大幅刷新 SOTA。", "url": "https://arxiv.org/abs/1810.04805", "source": "BERT 论文" },
+    { "id": "gpt", "title": "GPT 系列", "text": "自回归语言模型，从左到右生成文本。GPT-3 引入 in-context learning，ChatGPT 引爆大模型浪潮。", "url": "https://arxiv.org/abs/2005.14165", "source": "GPT-3 论文" },
+    { "id": "llm", "title": "大语言模型", "text": "LLM 基于 Transformer 解码器，通过海量语料预训练获得通用能力，支持对话、推理、代码生成。", "url": "https://arxiv.org/abs/2005.14165", "source": "GPT-3 论文" },
+    { "id": "rlhf", "title": "RLHF", "text": "基于人类反馈的强化学习，让模型输出对齐人类偏好。分为 SFT、奖励模型、PPO 三个阶段。", "url": "https://arxiv.org/abs/2203.02155", "source": "InstructGPT 论文" },
+    { "id": "diffusion", "title": "扩散模型", "text": "Diffusion model 通过逐步去噪生成图像，前向加噪、反向去噪。DDPM 奠定基础，Stable Diffusion 大规模应用。", "url": "https://arxiv.org/abs/2006.11239", "source": "DDPM 论文" },
+    { "id": "vae", "title": "变分自编码器", "text": "VAE 通过编码器-解码器学习潜在空间，是生成模型的重要分支，与扩散模型有理论关联。", "url": "https://arxiv.org/abs/1312.6114", "source": "VAE 论文" },
+    { "id": "gan", "title": "生成对抗网络", "text": "GAN 通过生成器与判别器的对抗博弈学习数据分布，能生成逼真图像。", "url": "https://arxiv.org/abs/1406.2661", "source": "GAN 论文" },
+    { "id": "cnn", "title": "卷积神经网络", "text": "CNN 通过卷积核提取局部特征，是计算机视觉的基础架构，ResNet 引入残差连接解决退化问题。", "url": "https://arxiv.org/abs/1512.03385", "source": "ResNet 论文" },
+    { "id": "resnet", "title": "ResNet", "text": "残差网络通过跳跃连接让深层网络可训练，是 CNN 的重要里程碑。", "url": "https://arxiv.org/abs/1512.03385", "source": "ResNet 论文" },
+    { "id": "optimizer", "title": "优化器", "text": "Adam 等优化器通过自适应学习率加速训练收敛，是大模型训练的基础组件。", "url": "https://arxiv.org/abs/1412.6980", "source": "Adam 论文" },
+    { "id": "embedding", "title": "词嵌入", "text": "Embedding 将离散 token 映射为稠密向量，Word2Vec 开创分布式表示，是 NLP 的基础。", "url": "https://arxiv.org/abs/1301.3781", "source": "Word2Vec 论文" },
+    { "id": "positional", "title": "位置编码", "text": "Positional encoding 为 Transformer 注入序列顺序信息，正弦/余弦或可学习参数。", "url": "https://arxiv.org/abs/1706.03762", "source": "Attention Is All You Need" }
+  ],
+  "edges": [
+    { "from": "attention", "to": "transformer", "strength": 95, "reason": "same-source" },
+    { "from": "self-attention", "to": "attention", "strength": 90, "reason": "keyword-overlap" },
+    { "from": "transformer", "to": "bert", "strength": 80, "reason": "ai-inferred" },
+    { "from": "transformer", "to": "gpt", "strength": 80, "reason": "ai-inferred" },
+    { "from": "gpt", "to": "llm", "strength": 90, "reason": "ai-inferred" },
+    { "from": "llm", "to": "rlhf", "strength": 75, "reason": "ai-inferred" },
+    { "from": "diffusion", "to": "vae", "strength": 60, "reason": "ai-inferred" },
+    { "from": "diffusion", "to": "gan", "strength": 55, "reason": "ai-inferred" },
+    { "from": "cnn", "to": "resnet", "strength": 95, "reason": "same-source" },
+    { "from": "transformer", "to": "positional", "strength": 70, "reason": "ai-inferred" },
+    { "from": "embedding", "to": "transformer", "strength": 65, "reason": "ai-inferred" },
+    { "from": "optimizer", "to": "llm", "strength": 50, "reason": "ai-inferred" }
+  ],
+  "config": {
+    "theme": "dark",
+    "showSearch": true,
+    "showLegend": true,
+    "showStats": true,
+    "interactive": true,
+    "width": 1200,
+    "height": 800
+  }
+}

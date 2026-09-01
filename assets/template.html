@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>__TITLE__</title>
+  <style>
+    /* ========== 主题变量 ========== */
+    :root, [data-theme="obsidian"] {
+      color-scheme: light;
+      --bg: #f2f0ec;
+      --bg-panel: #ece9e4;
+      --bg-topbar: rgba(242,240,236,0.92);
+      --bg-card: rgba(255,255,255,0.9);
+      --bg-input: rgba(0,0,0,0.04);
+      --border: rgba(0,0,0,0.12);
+      --text: #333333;
+      --text-secondary: #666666;
+      --text-muted: #999999;
+      --accent: #7c3aed;
+      --accent-soft: rgba(124,58,237,0.1);
+      --accent-text: #6d28d9;
+      --title-grad: linear-gradient(135deg, #6d28d9, #7c3aed);
+      --shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    [data-theme="space"] {
+      color-scheme: dark;
+      --bg: #060610;
+      --bg-panel: #0d0d28;
+      --bg-topbar: rgba(13,13,40,0.92);
+      --bg-card: rgba(13,13,40,0.95);
+      --bg-input: rgba(20,20,55,0.7);
+      --border: rgba(100,116,180,0.18);
+      --text: #e8ecf1;
+      --text-secondary: #8899b4;
+      --text-muted: #5a6a80;
+      --accent: #8b5cf6;
+      --accent-soft: rgba(139,92,246,0.12);
+      --accent-text: #c4b5fd;
+      --title-grad: linear-gradient(135deg, #c4b5fd, #a78bfa, #818cf8);
+      --shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ========== 顶部观测台工具栏 ========== */
+    #topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--bg-topbar);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      position: relative;
+      z-index: 20;
+    }
+    #topbar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 5%;
+      width: 90%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    #topbar h1 {
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      margin-right: 8px;
+      background: var(--title-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.8px;
+    }
+    #topbar .subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 40vw;
+    }
+    #topbar input[type="text"] {
+      padding: 7px 12px 7px 32px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      flex: 1;
+      min-width: 120px;
+      max-width: 260px;
+      outline: none;
+      transition: all 0.25s ease;
+      background: var(--bg-input);
+      color: var(--text);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238899b4' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 8px center;
+    }
+    #topbar input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    #topbar input[type="text"]::placeholder { color: var(--text-muted); }
+    .stat-badge {
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      white-space: nowrap;
+    }
+
+    /* ========== 面包屑 ========== */
+    #breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      z-index: 15;
+    }
+    .crumb { cursor: pointer; transition: color 0.2s; }
+    .crumb:hover { color: var(--accent-text); }
+    .crumb.current { color: var(--text); font-weight: 600; }
+    .sep { color: var(--text-muted); }
+
+    /* ========== 画布 ========== */
+    #canvas-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    #galaxy-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    #galaxy-canvas:active { cursor: grabbing; }
+
+    /* ========== 图例 ========== */
+    #legend {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    #legend .item { display: flex; align-items: center; gap: 8px; }
+    .leg-line {
+      display: inline-block;
+      width: 22px;
+      height: 0;
+      border-top: 2px solid;
+      flex-shrink: 0;
+    }
+    .leg-line.star { border-top: none; width: 8px; height: 8px; border-radius: 50%; background: #a78bfa; box-shadow: 0 0 6px #a78bfa; }
+    .leg-line.orbit { border-color: rgba(148,163,184,0.4); border-style: dashed; }
+    .leg-line.constellation { border-color: rgba(180,190,210,0.5); border-style: dashed; }
+    .leg-line.wormhole { border-color: rgba(139,92,246,0.7); border-style: dashed; }
+
+    /* ========== 控制按钮 ========== */
+    #controls {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+    }
+    #controls button {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+    #controls button:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* ========== 悬浮提示 ========== */
+    #tooltip {
+      position: absolute;
+      display: none;
+      max-width: 280px;
+      background: var(--bg-card);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text);
+      pointer-events: none;
+      z-index: 30;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    #tooltip .tt-title { font-weight: 700; color: var(--accent-text); margin-bottom: 4px; }
+    #tooltip .tt-source { font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; }
+    #tooltip .tt-narrative { font-size: 11px; color: var(--accent-text); }
+
+    /* ========== 详情面板 ========== */
+    #detail-panel {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      width: 300px;
+      max-height: 70%;
+      overflow-y: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 16px;
+      display: none;
+      z-index: 25;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    #detail-panel.show { display: block; }
+    #detail-panel .detail-close {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #detail-panel .detail-close:hover { color: var(--text); }
+    #detail-panel h3 { font-size: 14px; color: var(--accent-text); margin-bottom: 8px; padding-right: 20px; }
+    #detail-panel .detail-source { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
+    #detail-panel .detail-text { font-size: 12px; color: var(--text); line-height: 1.6; margin-bottom: 10px; }
+    #detail-panel .detail-stats { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+    #detail-panel .detail-goto {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    #detail-panel .detail-goto:hover { background: var(--accent-soft); opacity: 0.8; }
+
+    /* ========== 空状态 ========== */
+    #empty-state {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      z-index: 5;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 观测台顶栏 -->
+  <div id="topbar">
+    <h1>__TITLE__</h1>
+    <span class="subtitle" id="subtitle">__SUBTITLE__</span>
+    <input type="text" id="search-input" placeholder="__SEARCH_PLACEHOLDER__" />
+    <span class="stat-badge" id="stats-badge">__STATS_LOADING__</span>
+    <button id="btn-theme" title="切换主题" style="background:var(--bg-input);border:1px solid var(--border);color:var(--text-secondary);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;">🎨</button>
+  </div>
+
+  <!-- 导航面包屑 -->
+  <div id="breadcrumb">
+    <span class="crumb current" id="crumb-all">__CRUMB_ALL__</span>
+    <span class="sep" id="sep-galaxy" style="display:none;">›</span>
+    <span class="crumb" id="crumb-galaxy" style="display:none;"></span>
+    <span class="sep" id="sep-star" style="display:none;">›</span>
+    <span class="current" id="crumb-star" style="display:none;"></span>
+  </div>
+
+  <!-- 观测画布 -->
+  <div id="canvas-wrap">
+    <canvas id="galaxy-canvas"></canvas>
+
+    <!-- 图例 -->
+    <div id="legend">
+      <div class="item"><span class="leg-line star"></span> __LEGEND_STAR__</div>
+      <div class="item"><span class="leg-line orbit"></span> __LEGEND_ORBIT__</div>
+      <div class="item"><span class="leg-line constellation"></span> __LEGEND_CONSTELLATION__</div>
+      <div class="item"><span class="leg-line wormhole"></span> __LEGEND_WORMHOLE__</div>
+    </div>
+
+    <!-- 观测控制 -->
+    <div id="controls">
+      <button id="btn-zoom-in"  title="__ZOOM_IN__">＋</button>
+      <button id="btn-zoom-out" title="__ZOOM_OUT__">－</button>
+      <button id="btn-reset"    title="__ZOOM_RESET__">↺</button>
+    </div>
+
+    <!-- 星体悬浮提示 -->
+    <div id="tooltip"></div>
+
+    <!-- 星体详情面板 -->
+    <div id="detail-panel">
+      <button class="detail-close" id="detail-close">&times;</button>
+      <h3 id="detail-title"></h3>
+      <div class="detail-source" id="detail-source"></div>
+      <div class="detail-text" id="detail-text"></div>
+      <div class="detail-stats" id="detail-stats"></div>
+      <button class="detail-goto" id="detail-goto">__TRACE_SOURCE__</button>
+    </div>
+  </div>
+
+  <script>
+  // ====================================================================
+  //  Galaxy Page Runtime — 由 galaxy-page render 注入
+  //  数据契约：window.GALAXY_DATA = { points, edges, layout, config }
+  //  layout = { nodes: [{id, x, y, radius, color, label, fullText, source, url, page, galaxy}],
+  //             galaxies: [{id, name, centerX, centerY, color}] }
+  //  若 layout 缺失，浏览器端自动重算（buildGalaxyGraph + computeGalaxyLayout）
+  // ====================================================================
+  window.__GALAXY_DATA__ = __GALAXY_DATA_JSON__;
+  </script>
+  <script>
+  // ====================================================================
+  //  内联核心：utils.js + galaxy-core.js（由 galaxy-page render 注入）
+  // ====================================================================
+  __UTILS_INLINE__
+  </script>
+  <script>
+  __CORE_INLINE__
+  </script>
+  <script>
+  // ====================================================================
+  //  Galaxy Page 运行时 — 复用 galaxy-core.js（布局 + 渲染）
+  //  包进 IIFE 隔离作用域，避免与内联核心的全局 var 冲突
+  // ====================================================================
+  (function () {
+  const Core = window.GalaxyCore;
+
+  const DATA = window.__GALAXY_DATA__;
+  const CFG = DATA.config || {};
+
+  // ---- DOM ----
+  const canvas = document.getElementById('galaxy-canvas');
+  const ctx = canvas.getContext('2d');
+  const tooltip = document.getElementById('tooltip');
+  const searchInput = document.getElementById('search-input');
+  const statsBadge = document.getElementById('stats-badge');
+  const detailPanel = document.getElementById('detail-panel');
+  const crumbAll = document.getElementById('crumb-all');
+  const crumbGalaxy = document.getElementById('crumb-galaxy');
+  const crumbStar = document.getElementById('crumb-star');
+  const sepGalaxy = document.getElementById('sep-galaxy');
+  const sepStar = document.getElementById('sep-star');
+
+  // ---- 状态 ----
+  let graphNodes = [];
+  let graphEdges = [];
+  let galaxies = [];
+  let hoveredNode = null;
+  let focusedNode = null;
+  let selectedNode = null;
+  let filterText = '';
+  let viewTransform = { offsetX: 0, offsetY: 0, scale: 1 };
+  let isPanning = false;
+  let panStart = { x: 0, y: 0 };
+  let panOffsetStart = { x: 0, y: 0 };
+  let animTime = 0;
+  let animFrameId = null;
+
+  // ---- 数据准备 ----
+  function prepareData() {
+    const points = DATA.points.map((p, i) => ({
+      id: p.id || ('kp-' + i),
+      title: p.title || '',
+      text: p.text || p.title || '',
+      url: p.url || '',
+      source: p.source || '',
+      page: p.page || 0
+    }));
+
+    // 显式边（可选）
+    const explicitEdges = (DATA.edges || []).map(e => {
+      const fromIdx = points.findIndex(p => p.id === e.from);
+      const toIdx = points.findIndex(p => p.id === e.to);
+      return { from: fromIdx, to: toIdx, strength: e.strength || 50, reason: e.reason || 'ai-inferred' };
+    }).filter(e => e.from >= 0 && e.to >= 0);
+
+    return { points, explicitEdges };
+  }
+
+  // ---- 构建图（优先用预计算布局，否则自动计算） ----
+  function buildGraph() {
+    const { points, explicitEdges } = prepareData();
+    const W = CFG.width || 1200;
+    const H = CFG.height || 800;
+
+    Core.buildGalaxyGraph(points, '');
+    graphNodes = Core.getGalaxyState().graphNodes;
+    graphEdges = Core.getGalaxyState().graphEdges;
+    galaxies = Core.getGalaxyState().galaxies;
+
+    // 合并显式边（去重）
+    explicitEdges.forEach(ee => {
+      const dup = graphEdges.some(e => (e.from === ee.from && e.to === ee.to) || (e.from === ee.to && e.to === ee.from));
+      if (!dup) graphEdges.push({ id: ee.from + '-' + ee.to, from: ee.from, to: ee.to, strength: ee.strength, reason: ee.reason, narrative: '', visualStrength: ee.strength / 100, bidirectional: true });
+    });
+
+    // 预计算布局：直接使用注入坐标（归一化 [0,1] → 实际 canvas 尺寸）
+    if (DATA.layout && DATA.layout.nodes && DATA.layout.nodes.length === graphNodes.length) {
+      const wrap = document.getElementById('canvas-wrap');
+      const rect = wrap.getBoundingClientRect();
+      const cw = rect.width || 800, ch = rect.height || 600;
+      const scale = Math.min(cw, ch);
+      const ox = (cw - scale) / 2, oy = (ch - scale) / 2;
+
+      const posMap = {};
+      DATA.layout.nodes.forEach(n => { posMap[n.id] = n; });
+      graphNodes.forEach(nd => {
+        const pos = posMap[nd.stableId] || posMap[nd.id];
+        if (pos) {
+          nd.x = pos.x * scale + ox;
+          nd.y = pos.y * scale + oy;
+          nd.radius = pos.radius || nd.radius;
+        }
+      });
+      // 同步核心 galaxies 的 centerX/centerY（renderNebulae 等内部函数引用核心 galaxies）
+      const coreState = Core.getGalaxyState();
+      const galMap = {};
+      (DATA.layout.galaxies || []).forEach(g => { galMap[g.id] = g; });
+      coreState.galaxies.forEach(g => {
+        const lg = galMap[g.id];
+        if (lg) { g.centerX = lg.centerX * scale + ox; g.centerY = lg.centerY * scale + oy; }
+      });
+      galaxies = coreState.galaxies;
+    } else {
+      // 无预计算：自动布局
+      Core.detectGalaxies(graphNodes, graphEdges);
+      Core.computeGalaxyLayout(graphNodes, graphEdges, W, H);
+      galaxies = Core.getGalaxyState().galaxies;
+    }
+
+    updateStats();
+  }
+
+  // ---- 渲染 ----
+  function renderGraph() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const W = rect.width, H = rect.height;
+    if (!W || !H) return;
+
+    Core.renderGalaxy(ctx, viewTransform, W, H, {
+      hoveredNode, focusedNode, selectedNode, filterText, time: animTime, aiEdges: []
+    });
+  }
+
+  // ---- 动画循环 ----
+  function startAnimLoop() {
+    if (animFrameId) return;
+    function loop(ts) {
+      animTime = ts;
+      renderGraph();
+      animFrameId = requestAnimationFrame(loop);
+    }
+    animFrameId = requestAnimationFrame(loop);
+  }
+
+  // ---- Canvas 自适应 ----
+  function resizeCanvas() {
+    const wrap = document.getElementById('canvas-wrap');
+    const rect = wrap.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    renderGraph();
+  }
+  window.addEventListener('resize', resizeCanvas);
+  try { new ResizeObserver(resizeCanvas).observe(document.getElementById('canvas-wrap')); } catch (e) {}
+
+  // ---- 统计 ----
+  function updateStats() {
+    const n = graphNodes.length;
+    const e = graphEdges.length;
+    const g = galaxies.length;
+    if (n) {
+      statsBadge.textContent = '⭐ ' + n + ' · 🌌 ' + g + ' · ' + e;
+    } else {
+      statsBadge.textContent = '🌌';
+    }
+  }
+
+  // ---- 面包屑 ----
+  function updateBreadcrumb() {
+    if (focusedNode !== null && focusedNode !== undefined) {
+      const nd = graphNodes[focusedNode];
+      let galName = '';
+      if (nd && nd.galaxy) {
+        const gal = galaxies.find(g => g.id === nd.galaxy);
+        if (gal) galName = gal.name;
+      }
+      crumbGalaxy.style.display = '';
+      crumbGalaxy.textContent = '🌀 ' + (galName || '');
+      sepGalaxy.style.display = '';
+      crumbStar.style.display = '';
+      crumbStar.textContent = '⭐ ' + (nd ? nd.label : '');
+      sepStar.style.display = '';
+      crumbAll.classList.remove('current');
+      crumbGalaxy.classList.remove('current');
+      crumbStar.classList.add('current');
+    } else {
+      crumbGalaxy.style.display = 'none';
+      crumbStar.style.display = 'none';
+      sepGalaxy.style.display = 'none';
+      sepStar.style.display = 'none';
+      crumbAll.classList.add('current');
+    }
+  }
+
+  crumbAll.addEventListener('click', () => {
+    focusedNode = null; selectedNode = null;
+    viewTransform = { offsetX: 0, offsetY: 0, scale: 1 };
+    updateBreadcrumb(); hideDetail(); renderGraph();
+  });
+
+  crumbGalaxy.addEventListener('click', () => {
+    if (focusedNode !== null && graphNodes[focusedNode]) {
+      const nd = graphNodes[focusedNode];
+      if (nd.galaxy) {
+        const gal = galaxies.find(g => g.id === nd.galaxy);
+        if (gal) {
+          const rect = document.getElementById('canvas-wrap').getBoundingClientRect();
+          viewTransform.scale = 1.5;
+          viewTransform.offsetX = rect.width / 2 - gal.centerX * 1.5;
+          viewTransform.offsetY = rect.height / 2 - gal.centerY * 1.5;
+        }
+      }
+      focusedNode = null;
+      updateBreadcrumb(); hideDetail(); renderGraph();
+    }
+  });
+
+  // ---- 详情面板 ----
+  function showDetail(idx) {
+    if (idx === null) { hideDetail(); return; }
+    selectedNode = idx;
+    const nd = graphNodes[idx];
+    document.getElementById('detail-title').textContent = nd.label;
+    document.getElementById('detail-source').textContent = '📄 ' + (nd.source || '');
+    document.getElementById('detail-text').textContent = nd.fullText || '';
+    const connCount = graphEdges.filter(e => e.from === idx || e.to === idx).length;
+    document.getElementById('detail-stats').textContent = '🔗 ' + connCount;
+    detailPanel.classList.add('show');
+  }
+  function hideDetail() {
+    detailPanel.classList.remove('show');
+    selectedNode = null;
+  }
+  document.getElementById('detail-close').addEventListener('click', hideDetail);
+  document.getElementById('detail-goto').addEventListener('click', () => {
+    const nd = graphNodes[selectedNode];
+    if (nd && nd.url) window.open(nd.url, '_blank');
+  });
+
+  // ---- 搜索过滤 ----
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      filterText = searchInput.value.trim();
+      graphNodes.forEach(nd => {
+        const ft = filterText.toLowerCase();
+        nd.matchesFilter = !ft || (nd.fullText || '').toLowerCase().includes(ft) || (nd.source || '').toLowerCase().includes(ft);
+      });
+      renderGraph();
+    });
+  }
+
+  // ---- 交互：hover / 点击 / 拖拽 / 缩放 ----
+  function screenToWorld(sx, sy) {
+    return { x: (sx - viewTransform.offsetX) / viewTransform.scale, y: (sy - viewTransform.offsetY) / viewTransform.scale };
+  }
+  function findNodeAt(mx, my) {
+    const w = screenToWorld(mx, my);
+    for (let i = graphNodes.length - 1; i >= 0; i--) {
+      const nd = graphNodes[i];
+      if (Math.hypot(w.x - nd.x, w.y - nd.y) < (nd.radius + 6)) return i;
+    }
+    return null;
+  }
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const idx = findNodeAt(mx, my);
+    if (idx !== hoveredNode) {
+      hoveredNode = idx;
+      if (idx !== null) {
+        const nd = graphNodes[idx];
+        const connCount = graphEdges.filter(ed => ed.from === idx || ed.to === idx).length;
+        tooltip.innerHTML = '<div class="tt-title">' + (nd.label || '') + '</div>'
+          + '<div class="tt-source">📄 ' + (nd.source || '') + '</div>'
+          + '<div class="tt-narrative">⭐ ' + connCount + '</div>';
+        tooltip.style.display = 'block';
+        tooltip.style.left = (mx + 14) + 'px';
+        tooltip.style.top = (my + 14) + 'px';
+      } else {
+        tooltip.style.display = 'none';
+      }
+      renderGraph();
+    }
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    hoveredNode = null;
+    tooltip.style.display = 'none';
+    renderGraph();
+  });
+
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const idx = findNodeAt(e.clientX - rect.left, e.clientY - rect.top);
+    if (idx !== null) {
+      // 再次点击同一节点 → 取消高亮
+      if (focusedNode === idx) {
+        focusedNode = null;
+        updateBreadcrumb();
+        hideDetail();
+        renderGraph();
+        return;
+      }
+      focusedNode = idx;
+      updateBreadcrumb();
+      showDetail(idx);
+      renderGraph();
+    } else {
+      // 点击空白处 → 取消高亮
+      focusedNode = null;
+      updateBreadcrumb();
+      hideDetail();
+      renderGraph();
+    }
+  });
+
+  canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const idx = findNodeAt(e.clientX - rect.left, e.clientY - rect.top);
+    if (idx === null) {
+      isPanning = true;
+      panStart = { x: e.clientX, y: e.clientY };
+      panOffsetStart = { x: viewTransform.offsetX, y: viewTransform.offsetY };
+    }
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (isPanning) {
+      viewTransform.offsetX = panOffsetStart.x + (e.clientX - panStart.x);
+      viewTransform.offsetY = panOffsetStart.y + (e.clientY - panStart.y);
+      renderGraph();
+    }
+  });
+  window.addEventListener('mouseup', () => { isPanning = false; });
+
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const factor = e.deltaY < 0 ? 1.15 : 0.87;
+    const newScale = Math.max(0.15, Math.min(8, viewTransform.scale * factor));
+    viewTransform.offsetX = mx - (mx - viewTransform.offsetX) * (newScale / viewTransform.scale);
+    viewTransform.offsetY = my - (my - viewTransform.offsetY) * (newScale / viewTransform.scale);
+    viewTransform.scale = newScale;
+    renderGraph();
+  });
+
+  document.getElementById('btn-zoom-in').addEventListener('click', () => {
+    viewTransform.scale = Math.min(8, viewTransform.scale * 1.3);
+    renderGraph();
+  });
+  document.getElementById('btn-zoom-out').addEventListener('click', () => {
+    viewTransform.scale = Math.max(0.15, viewTransform.scale * 0.77);
+    renderGraph();
+  });
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    viewTransform = { offsetX: 0, offsetY: 0, scale: 1 };
+    renderGraph();
+  });
+
+  // ---- 启动 ----
+  // 主题：默认 obsidian（简洁），可切换 space（深空）
+  let currentTheme = 'obsidian';
+  function applyTheme(name) {
+    currentTheme = name;
+    document.documentElement.setAttribute('data-theme', name);
+    Core.setGalaxyTheme(name);
+    renderGraph();
+  }
+  const btnTheme = document.getElementById('btn-theme');
+  if (btnTheme) {
+    btnTheme.addEventListener('click', () => {
+      applyTheme(currentTheme === 'obsidian' ? 'space' : 'obsidian');
+    });
+  }
+  applyTheme('obsidian');
+
+  buildGraph();
+  resizeCanvas();
+  startAnimLoop();
+  })();
+  </script>
+</body>
+</html>

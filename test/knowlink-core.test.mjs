@@ -1,14 +1,14 @@
 // ====================================================================
-//  galaxy-core.js 单元测试（Node 内置 test runner，零依赖）
+//  knowlink-core.js 单元测试（Node 内置 test runner，零依赖）
 //  运行：npm test
 // ====================================================================
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  buildGalaxyGraph, computeStrength, getEdgeNarrative,
-  getGalaxyState, computeGalaxyLayout
-} from '../lib/galaxy-core.js';
+  buildKnowlinkGraph, computeStrength, getEdgeNarrative,
+  getKnowlinkState, computeKnowlinkLayout
+} from '../lib/knowlink-core.js';
 
 // ---- 测试数据 ----
 const SAMPLE_POINTS = [
@@ -78,20 +78,20 @@ test('getEdgeNarrative: keyword-overlap 按强度分级', () => {
 });
 
 // ====================================================================
-//  buildGalaxyGraph + getGalaxyState — 图构建
+//  buildKnowlinkGraph + getKnowlinkState — 图构建
 // ====================================================================
-test('buildGalaxyGraph: 节点数正确，stableId 保留', () => {
-  buildGalaxyGraph(SAMPLE_POINTS);
-  const { graphNodes } = getGalaxyState();
+test('buildKnowlinkGraph: 节点数正确，stableId 保留', () => {
+  buildKnowlinkGraph(SAMPLE_POINTS);
+  const { graphNodes } = getKnowlinkState();
   assert.equal(graphNodes.length, 4);
   assert.equal(graphNodes[0].stableId, 'kp-1');
   assert.equal(graphNodes[0].label, '深度学习');
   assert.ok(graphNodes[0].fullText.length > 0);
 });
 
-test('buildGalaxyGraph: 同源点之间生成边', () => {
-  buildGalaxyGraph(SAMPLE_POINTS);
-  const { graphEdges } = getGalaxyState();
+test('buildKnowlinkGraph: 同源点之间生成边', () => {
+  buildKnowlinkGraph(SAMPLE_POINTS);
+  const { graphEdges } = getKnowlinkState();
   // kp-1 与 kp-2 同源（example.com/dl）→ 必有边
   const sameSourceEdge = graphEdges.find(e =>
     (e.from === 0 && e.to === 1) || (e.from === 1 && e.to === 0)
@@ -101,41 +101,41 @@ test('buildGalaxyGraph: 同源点之间生成边', () => {
   assert.equal(sameSourceEdge.reason, 'same-source');
 });
 
-test('buildGalaxyGraph: 检测到星系（连通分量）', () => {
-  buildGalaxyGraph(SAMPLE_POINTS);
-  const { galaxies } = getGalaxyState();
+test('buildKnowlinkGraph: 检测到星系（连通分量）', () => {
+  buildKnowlinkGraph(SAMPLE_POINTS);
+  const { galaxies } = getKnowlinkState();
   // kp-1/kp-2/kp-3 通过同源/同域/关键词相连 → 至少 1 个多节点星系
   assert.ok(galaxies.length >= 1, `应有星系，实际 ${galaxies.length}`);
   const multiNode = galaxies.find(g => g.nodeIds.length >= 2);
   assert.ok(multiNode, '应有至少一个多节点星系');
 });
 
-test('buildGalaxyGraph: 空输入 → 空图', () => {
-  buildGalaxyGraph([]);
-  const { graphNodes, graphEdges } = getGalaxyState();
+test('buildKnowlinkGraph: 空输入 → 空图', () => {
+  buildKnowlinkGraph([]);
+  const { graphNodes, graphEdges } = getKnowlinkState();
   assert.equal(graphNodes.length, 0);
   assert.equal(graphEdges.length, 0);
 });
 
 // ====================================================================
-//  computeGalaxyLayout — 布局确定性
+//  computeKnowlinkLayout — 布局确定性
 // ====================================================================
-test('computeGalaxyLayout: 相同输入产生相同布局（确定性）', () => {
-  buildGalaxyGraph(SAMPLE_POINTS);
-  computeGalaxyLayout(getGalaxyState().graphNodes, getGalaxyState().graphEdges, 1200, 800);
-  const first = getGalaxyState().graphNodes.map(n => [n.x, n.y]);
+test('computeKnowlinkLayout: 相同输入产生相同布局（确定性）', () => {
+  buildKnowlinkGraph(SAMPLE_POINTS);
+  computeKnowlinkLayout(getKnowlinkState().graphNodes, getKnowlinkState().graphEdges, 1200, 800);
+  const first = getKnowlinkState().graphNodes.map(n => [n.x, n.y]);
 
-  buildGalaxyGraph(SAMPLE_POINTS);
-  computeGalaxyLayout(getGalaxyState().graphNodes, getGalaxyState().graphEdges, 1200, 800);
-  const second = getGalaxyState().graphNodes.map(n => [n.x, n.y]);
+  buildKnowlinkGraph(SAMPLE_POINTS);
+  computeKnowlinkLayout(getKnowlinkState().graphNodes, getKnowlinkState().graphEdges, 1200, 800);
+  const second = getKnowlinkState().graphNodes.map(n => [n.x, n.y]);
 
   assert.deepEqual(first, second, '相同输入应产生相同布局坐标');
 });
 
-test('computeGalaxyLayout: 所有节点坐标是有限数字', () => {
-  buildGalaxyGraph(SAMPLE_POINTS);
-  computeGalaxyLayout(getGalaxyState().graphNodes, getGalaxyState().graphEdges, 1200, 800);
-  const { graphNodes } = getGalaxyState();
+test('computeKnowlinkLayout: 所有节点坐标是有限数字', () => {
+  buildKnowlinkGraph(SAMPLE_POINTS);
+  computeKnowlinkLayout(getKnowlinkState().graphNodes, getKnowlinkState().graphEdges, 1200, 800);
+  const { graphNodes } = getKnowlinkState();
   graphNodes.forEach(n => {
     assert.ok(Number.isFinite(n.x), `节点 ${n.stableId} x 应为有限数字`);
     assert.ok(Number.isFinite(n.y), `节点 ${n.stableId} y 应为有限数字`);

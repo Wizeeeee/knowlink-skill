@@ -153,13 +153,13 @@
       position: relative;
       overflow: hidden;
     }
-    #galaxy-canvas {
+    #knowlink-canvas {
       width: 100%;
       height: 100%;
       display: block;
       cursor: grab;
     }
-    #galaxy-canvas:active { cursor: grabbing; }
+    #knowlink-canvas:active { cursor: grabbing; }
 
     /* ========== 图例 ========== */
     #legend {
@@ -314,15 +314,15 @@
   <!-- 导航面包屑 -->
   <div id="breadcrumb">
     <span class="crumb current" id="crumb-all">__CRUMB_ALL__</span>
-    <span class="sep" id="sep-galaxy" style="display:none;">›</span>
-    <span class="crumb" id="crumb-galaxy" style="display:none;"></span>
+    <span class="sep" id="sep-knowlink" style="display:none;">›</span>
+    <span class="crumb" id="crumb-knowlink" style="display:none;"></span>
     <span class="sep" id="sep-star" style="display:none;">›</span>
     <span class="current" id="crumb-star" style="display:none;"></span>
   </div>
 
   <!-- 观测画布 -->
   <div id="canvas-wrap">
-    <canvas id="galaxy-canvas"></canvas>
+    <canvas id="knowlink-canvas"></canvas>
 
     <!-- 图例 -->
     <div id="legend">
@@ -355,17 +355,17 @@
 
   <script>
   // ====================================================================
-  //  Galaxy Page Runtime — 由 galaxy-page render 注入
-  //  数据契约：window.GALAXY_DATA = { points, edges, layout, config }
-  //  layout = { nodes: [{id, x, y, radius, color, label, fullText, source, url, page, galaxy}],
+  //  Knowlink Page Runtime — 由 knowlink-page render 注入
+  //  数据契约：window.KNOWLINK_DATA = { points, edges, layout, config }
+  //  layout = { nodes: [{id, x, y, radius, color, label, fullText, source, url, page, knowlink}],
   //             galaxies: [{id, name, centerX, centerY, color}] }
-  //  若 layout 缺失，浏览器端自动重算（buildGalaxyGraph + computeGalaxyLayout）
+  //  若 layout 缺失，浏览器端自动重算（buildKnowlinkGraph + computeKnowlinkLayout）
   // ====================================================================
-  window.__GALAXY_DATA__ = __GALAXY_DATA_JSON__;
+  window.__KNOWLINK_DATA__ = __KNOWLINK_DATA_JSON__;
   </script>
   <script>
   // ====================================================================
-  //  内联核心：utils.js + galaxy-core.js（由 galaxy-page render 注入）
+  //  内联核心：utils.js + knowlink-core.js（由 knowlink-page render 注入）
   // ====================================================================
   __UTILS_INLINE__
   </script>
@@ -374,26 +374,26 @@
   </script>
   <script>
   // ====================================================================
-  //  Galaxy Page 运行时 — 复用 galaxy-core.js（布局 + 渲染）
+  //  Knowlink Page 运行时 — 复用 knowlink-core.js（布局 + 渲染）
   //  包进 IIFE 隔离作用域，避免与内联核心的全局 var 冲突
   // ====================================================================
   (function () {
-  const Core = window.GalaxyCore;
+  const Core = window.KnowlinkCore;
 
-  const DATA = window.__GALAXY_DATA__;
+  const DATA = window.__KNOWLINK_DATA__;
   const CFG = DATA.config || {};
 
   // ---- DOM ----
-  const canvas = document.getElementById('galaxy-canvas');
+  const canvas = document.getElementById('knowlink-canvas');
   const ctx = canvas.getContext('2d');
   const tooltip = document.getElementById('tooltip');
   const searchInput = document.getElementById('search-input');
   const statsBadge = document.getElementById('stats-badge');
   const detailPanel = document.getElementById('detail-panel');
   const crumbAll = document.getElementById('crumb-all');
-  const crumbGalaxy = document.getElementById('crumb-galaxy');
+  const crumbKnowlink = document.getElementById('crumb-knowlink');
   const crumbStar = document.getElementById('crumb-star');
-  const sepGalaxy = document.getElementById('sep-galaxy');
+  const sepKnowlink = document.getElementById('sep-knowlink');
   const sepStar = document.getElementById('sep-star');
 
   // ---- 状态 ----
@@ -438,10 +438,10 @@
     const W = CFG.width || 1200;
     const H = CFG.height || 800;
 
-    Core.buildGalaxyGraph(points, '');
-    graphNodes = Core.getGalaxyState().graphNodes;
-    graphEdges = Core.getGalaxyState().graphEdges;
-    galaxies = Core.getGalaxyState().galaxies;
+    Core.buildKnowlinkGraph(points, '');
+    graphNodes = Core.getKnowlinkState().graphNodes;
+    graphEdges = Core.getKnowlinkState().graphEdges;
+    galaxies = Core.getKnowlinkState().galaxies;
 
     // 合并显式边（去重）
     explicitEdges.forEach(ee => {
@@ -468,7 +468,7 @@
         }
       });
       // 同步核心 galaxies 的 centerX/centerY（renderNebulae 等内部函数引用核心 galaxies）
-      const coreState = Core.getGalaxyState();
+      const coreState = Core.getKnowlinkState();
       const galMap = {};
       (DATA.layout.galaxies || []).forEach(g => { galMap[g.id] = g; });
       coreState.galaxies.forEach(g => {
@@ -479,8 +479,8 @@
     } else {
       // 无预计算：自动布局
       Core.detectGalaxies(graphNodes, graphEdges);
-      Core.computeGalaxyLayout(graphNodes, graphEdges, W, H);
-      galaxies = Core.getGalaxyState().galaxies;
+      Core.computeKnowlinkLayout(graphNodes, graphEdges, W, H);
+      galaxies = Core.getKnowlinkState().galaxies;
     }
 
     updateStats();
@@ -492,7 +492,7 @@
     const W = rect.width, H = rect.height;
     if (!W || !H) return;
 
-    Core.renderGalaxy(ctx, viewTransform, W, H, {
+    Core.renderKnowlink(ctx, viewTransform, W, H, {
       hoveredNode, focusedNode, selectedNode, filterText, time: animTime, aiEdges: []
     });
   }
@@ -541,23 +541,23 @@
     if (focusedNode !== null && focusedNode !== undefined) {
       const nd = graphNodes[focusedNode];
       let galName = '';
-      if (nd && nd.galaxy) {
-        const gal = galaxies.find(g => g.id === nd.galaxy);
+      if (nd && nd.knowlink) {
+        const gal = galaxies.find(g => g.id === nd.knowlink);
         if (gal) galName = gal.name;
       }
-      crumbGalaxy.style.display = '';
-      crumbGalaxy.textContent = '🌀 ' + (galName || '');
-      sepGalaxy.style.display = '';
+      crumbKnowlink.style.display = '';
+      crumbKnowlink.textContent = '🌀 ' + (galName || '');
+      sepKnowlink.style.display = '';
       crumbStar.style.display = '';
       crumbStar.textContent = '⭐ ' + (nd ? nd.label : '');
       sepStar.style.display = '';
       crumbAll.classList.remove('current');
-      crumbGalaxy.classList.remove('current');
+      crumbKnowlink.classList.remove('current');
       crumbStar.classList.add('current');
     } else {
-      crumbGalaxy.style.display = 'none';
+      crumbKnowlink.style.display = 'none';
       crumbStar.style.display = 'none';
-      sepGalaxy.style.display = 'none';
+      sepKnowlink.style.display = 'none';
       sepStar.style.display = 'none';
       crumbAll.classList.add('current');
     }
@@ -569,11 +569,11 @@
     updateBreadcrumb(); hideDetail(); renderGraph();
   });
 
-  crumbGalaxy.addEventListener('click', () => {
+  crumbKnowlink.addEventListener('click', () => {
     if (focusedNode !== null && graphNodes[focusedNode]) {
       const nd = graphNodes[focusedNode];
-      if (nd.galaxy) {
-        const gal = galaxies.find(g => g.id === nd.galaxy);
+      if (nd.knowlink) {
+        const gal = galaxies.find(g => g.id === nd.knowlink);
         if (gal) {
           const rect = document.getElementById('canvas-wrap').getBoundingClientRect();
           viewTransform.scale = 1.5;
@@ -735,7 +735,7 @@
   function applyTheme(name) {
     currentTheme = name;
     document.documentElement.setAttribute('data-theme', name);
-    Core.setGalaxyTheme(name);
+    Core.setKnowlinkTheme(name);
     renderGraph();
   }
   const btnTheme = document.getElementById('btn-theme');

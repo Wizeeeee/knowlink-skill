@@ -1,4 +1,4 @@
-# 生成物（由 `node bin/galaxy-page.mjs demo` 生成）
+# 生成物（由 `node bin/knowlink-page.mjs demo` 生成）
 examples/out/
 
 # Node

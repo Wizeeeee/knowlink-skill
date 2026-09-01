@@ -1,10 +1,10 @@
 {
-  "name": "galaxy-page",
+  "name": "knowlink-page",
   "version": "1.0.0",
   "description": "把知识点数据变成可分享的交互式星系页面 — 输入 typed JSON 规范，输出自包含 HTML",
   "type": "module",
   "bin": {
-    "galaxy-page": "bin/galaxy-page.mjs"
+    "knowlink-page": "bin/knowlink-page.mjs"
   },
   "files": [
     "bin/",
@@ -16,8 +16,8 @@
     "SKILL.md"
   ],
   "scripts": {
-    "demo": "node bin/galaxy-page.mjs demo",
-    "validate": "node bin/galaxy-page.mjs validate examples/demo.json",
+    "demo": "node bin/knowlink-page.mjs demo",
+    "validate": "node bin/knowlink-page.mjs validate examples/demo.json",
     "test": "node --test"
   },
   "engines": {
@@ -26,7 +26,7 @@
   "keywords": [
     "knowledge-graph",
     "visualization",
-    "galaxy",
+    "knowlink",
     "canvas",
     "cli"
   ],

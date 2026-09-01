@@ -1,26 +1,26 @@
 ---
-name: galaxy-page
-description: "基于 KnowLink 知识星系引擎生成自包含交互式 HTML 知识图谱页面。输入 typed JSON 规范（知识点 + 边 + 页面配置），输出可分享的星系可视化页面（Canvas 渲染、缩放/平移/搜索/详情面板）。复用 galaxy-core.js 布局+渲染引擎，Node 端预计算布局坐标。当用户要求把知识点/概念/主题可视化为知识图谱页面、生成报告/演示用星系图、或把 JSON 数据变成交互式 HTML 时使用。"
+name: knowlink-page
+description: "基于 KnowLink 知识星系引擎生成自包含交互式 HTML 知识图谱页面。输入 typed JSON 规范（知识点 + 边 + 页面配置），输出可分享的星系可视化页面（Canvas 渲染、缩放/平移/搜索/详情面板）。复用 knowlink-core.js 布局+渲染引擎，Node 端预计算布局坐标。当用户要求把知识点/概念/主题可视化为知识图谱页面、生成报告/演示用星系图、或把 JSON 数据变成交互式 HTML 时使用。"
 metadata:
   version: "1.0"
   last_updated: "2026-08-29"
 ---
 
-# Galaxy Page — 知识星系页面生成器
+# Knowlink Page — 知识星系页面生成器
 
-把"知识点数据"变成"可分享的交互式星系页面"。输入 JSON 规范，输出自包含 HTML（内联数据 + 预计算布局坐标，浏览器端用 galaxy-core.js 渲染）。
+把"知识点数据"变成"可分享的交互式星系页面"。输入 JSON 规范，输出自包含 HTML（内联数据 + 预计算布局坐标，浏览器端用 knowlink-core.js 渲染）。
 
 ## 快速路径（Fast authoring path）
 
 1. **写规范**：参考 `examples/demo.json` 的字段形状，写 `meta`（标题/语言）+ `points`（知识点）+ 可选 `edges`（显式边）+ 可选 `config`（页面配置）。
 2. **校验**：
    ```bash
-   node bin/galaxy-page.mjs validate <input.json>
+   node bin/knowlink-page.mjs validate <input.json>
    ```
    校验通过（exit 0）才继续。错误会指出具体字段。
 3. **渲染**：
    ```bash
-   node bin/galaxy-page.mjs render <input.json> [output.html]
+   node bin/knowlink-page.mjs render <input.json> [output.html]
    ```
    输出自包含 HTML。Node 端预计算布局坐标（确定性，seeded RNG），浏览器端直接渲染。
 4. **交付**：打开 HTML 验证。报告 `spec sha256` + `html sha256` + 节点/星系数量。
@@ -80,10 +80,10 @@ validate（schema 校验）
     ↓
 render（Node 端跑布局 → 坐标序列化 → 注入模板）
     ↓
-自包含 HTML（内联 galaxy-core.js + 数据 + 样式）
+自包含 HTML（内联 knowlink-core.js + 数据 + 样式）
 ```
 
-- `lib/galaxy-core.js`：从 `knowlink-obsidian/src/lib/galaxy-core.js` 复制的布局+渲染核心（含 seeded RNG 修复）
+- `lib/knowlink-core.js`：从 `knowlink-obsidian/src/lib/knowlink-core.js` 复制的布局+渲染核心（含 seeded RNG 修复）
 - `assets/template.html`：页面模板（基于 network.html 精简，去 Chrome 依赖）
 - 布局函数不碰 DOM → Node 端可预计算坐标；渲染函数浏览器端执行
 

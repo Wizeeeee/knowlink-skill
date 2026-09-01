@@ -1,7 +1,7 @@
-# Galaxy Page — 知识星系页面生成器
+# Knowlink Page — 知识星系页面生成器
 
 > 把"知识点数据"变成"可分享的交互式节点页面"。
-> 输入 typed JSON 规范，输出自包含 HTML（内联数据 + 预计算布局坐标，浏览器端用 galaxy-core.js 渲染）。
+> 输入 typed JSON 规范，输出自包含 HTML（内联数据 + 预计算布局坐标，浏览器端用 knowlink-core.js 渲染）。
 
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-green)
@@ -18,21 +18,21 @@
 
 ```bash
 # 校验输入规范
-node bin/galaxy-page.mjs validate examples/demo.json
+node bin/knowlink-page.mjs validate examples/demo.json
 
 # 渲染为自包含 HTML
-node bin/galaxy-page.mjs render examples/demo.json out/demo.html
+node bin/knowlink-page.mjs render examples/demo.json out/demo.html
 
 # 生成示例页面
-node bin/galaxy-page.mjs demo
+node bin/knowlink-page.mjs demo
 ```
 
 ### 通过 npm 使用（可选）
 
 ```bash
 npm install -g .
-galaxy-page validate examples/demo.json
-galaxy-page render examples/demo.json out/demo.html
+knowlink-page validate examples/demo.json
+knowlink-page render examples/demo.json out/demo.html
 ```
 
 ## 📖 命令
@@ -78,16 +78,16 @@ validate（schema 校验）
     ↓
 render（Node 端跑布局 → 坐标序列化 → 注入模板）
     ↓
-自包含 HTML（内联 galaxy-core.js + 数据 + 样式）
+自包含 HTML（内联 knowlink-core.js + 数据 + 样式）
 ```
 
 ```
 knowlink-skill/
 ├── SKILL.md                    Skill 定义（agent 使用入口）
 ├── bin/
-│   └── galaxy-page.mjs         CLI（validate / render / demo / doctor）
+│   └── knowlink-page.mjs         CLI（validate / render / demo / doctor）
 ├── lib/
-│   ├── galaxy-core.js          布局 + 渲染核心（Node 端预计算 + 浏览器端渲染）
+│   ├── knowlink-core.js          布局 + 渲染核心（Node 端预计算 + 浏览器端渲染）
 │   └── utils.js                共享工具
 ├── assets/
 │   └── template.html           页面模板
@@ -104,7 +104,7 @@ knowlink-skill/
 
 - **布局与渲染分离**：布局函数不碰 DOM → Node 端可预计算坐标；渲染函数浏览器端执行
 - **确定性**：seeded RNG，相同输入产生相同布局，可做 golden 测试
-- **零依赖**：`galaxy-page.mjs` 只用 `node:crypto` / `node:fs` / `node:path`
+- **零依赖**：`knowlink-page.mjs` 只用 `node:crypto` / `node:fs` / `node:path`
 
 ## 🛠️ 开发
 

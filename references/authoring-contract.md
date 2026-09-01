@@ -1,4 +1,4 @@
-# Authoring contract — Galaxy Page 编写契约
+# Authoring contract — Knowlink Page 编写契约
 
 ## 字段语义
 
@@ -29,7 +29,7 @@
 - `interactive`：false 时生成静态快照（当前模板未实现，默认交互式）。
 - `seed`：布局种子（缺省用 meta.title hash）。
 
-## 布局参数（来自 galaxy-core.js）
+## 布局参数（来自 knowlink-core.js）
 
 | 参数 | 值 | 说明 |
 |---|---|---|
@@ -46,7 +46,7 @@
 
 1. **先调数据**：删低价值边（strength < 15 的弱关联）、精简 title 长度。
 2. **再调布局**：增大 `config.width/height`（给星系更多空间）、调整 points 分组。
-3. **最后才改引擎**：改 `lib/galaxy-core.js` 的布局参数（如 padding、maxR），改完必须重新 render 验证。
+3. **最后才改引擎**：改 `lib/knowlink-core.js` 的布局参数（如 padding、maxR），改完必须重新 render 验证。
 
 **不要**为了通过而隐藏问题（如 overflow:hidden 裁掉节点）。
 
@@ -58,12 +58,12 @@
 
 ## 双端同步
 
-- `lib/galaxy-core.js` 是从 `knowlink-obsidian/src/lib/galaxy-core.js` 复制的。
-- 上游（Chrome 扩展 `galaxy-layout.js` / `galaxy-renderer.js`）改算法时，**三处都要同步**：
-  1. `knowlink-view/js/core/galaxy-layout.js` + `galaxy-renderer.js`
-  2. `knowlink-obsidian/src/lib/galaxy-core.js`
-  3. `knowlink-skill/lib/galaxy-core.js`
-- 同步后跑 `node bin/galaxy-page.mjs demo` 验证不回归。
+- `lib/knowlink-core.js` 是从 `knowlink-obsidian/src/lib/knowlink-core.js` 复制的。
+- 上游（Chrome 扩展 `knowlink-layout.js` / `knowlink-renderer.js`）改算法时，**三处都要同步**：
+  1. `knowlink-view/js/core/knowlink-layout.js` + `knowlink-renderer.js`
+  2. `knowlink-obsidian/src/lib/knowlink-core.js`
+  3. `knowlink-skill/lib/knowlink-core.js`
+- 同步后跑 `node bin/knowlink-page.mjs demo` 验证不回归。
 
 ## 已知限制
 

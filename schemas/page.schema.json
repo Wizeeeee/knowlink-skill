@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://knowlink.local/galaxy-page.schema.json",
-  "title": "Galaxy Page Specification",
-  "description": "KnowLink 知识星系页面生成器的输入规范。定义知识点数据 + 页面配置，由 galaxy-page render 生成自包含 HTML。",
+  "$id": "https://knowlink.local/knowlink-page.schema.json",
+  "title": "Knowlink Page Specification",
+  "description": "KnowLink 知识星系页面生成器的输入规范。定义知识点数据 + 页面配置，由 knowlink-page render 生成自包含 HTML。",
   "type": "object",
   "required": ["meta", "points"],
   "additionalProperties": false,

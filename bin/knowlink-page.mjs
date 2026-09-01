@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // ====================================================================
-//  galaxy-page — KnowLink 知识星系页面生成器 CLI
+//  knowlink-page — KnowLink 知识星系页面生成器 CLI
 //  用法：
-//    node bin/galaxy-page.mjs validate <input.json> [--json]
-//    node bin/galaxy-page.mjs render   <input.json> [output.html] [--json]
-//    node bin/galaxy-page.mjs demo     [output-directory]
-//    node bin/galaxy-page.mjs doctor
+//    node bin/knowlink-page.mjs validate <input.json> [--json]
+//    node bin/knowlink-page.mjs render   <input.json> [output.html] [--json]
+//    node bin/knowlink-page.mjs demo     [output-directory]
+//    node bin/knowlink-page.mjs doctor
 //  流程：读 JSON 规范 → schema 校验 → Node 端预计算布局 → 注入模板 → 输出自包含 HTML
 // ====================================================================
 
@@ -128,9 +128,9 @@ function validateSpec(spec) {
   return { valid: errors.length === 0, errors, warnings };
 }
 
-// ==================== 布局预计算（Node 端，复用 galaxy-core） ====================
+// ==================== 布局预计算（Node 端，复用 knowlink-core） ====================
 async function computeLayout(spec) {
-  const core = await import(pathToFileURL(path.join(skillRoot, 'lib', 'galaxy-core.js')).href);
+  const core = await import(pathToFileURL(path.join(skillRoot, 'lib', 'knowlink-core.js')).href);
 
   const points = spec.points.map((p, i) => ({
     id: p.id || ('kp-' + i),
@@ -144,8 +144,8 @@ async function computeLayout(spec) {
   const W = (spec.config && spec.config.width) || 1200;
   const H = (spec.config && spec.config.height) || 800;
 
-  core.buildGalaxyGraph(points, '');
-  const state = core.getGalaxyState();
+  core.buildKnowlinkGraph(points, '');
+  const state = core.getKnowlinkState();
 
   // 合并显式边
   const explicitEdges = (spec.edges || []).map(e => {
@@ -159,8 +159,8 @@ async function computeLayout(spec) {
     if (!dup) state.graphEdges.push({ id: ee.from + '-' + ee.to, from: ee.from, to: ee.to, strength: ee.strength, reason: ee.reason, narrative: '', visualStrength: ee.strength / 100, bidirectional: true });
   });
 
-  // buildGalaxyGraph 已自动调用 detectGalaxies，只需计算布局
-  core.computeGalaxyLayout(state.graphNodes, state.graphEdges, W, H);
+  // buildKnowlinkGraph 已自动调用 detectGalaxies，只需计算布局
+  core.computeKnowlinkLayout(state.graphNodes, state.graphEdges, W, H);
 
   // 归一化坐标到 [0,1]（保持宽高比，中心在 0.5,0.5）
   // 浏览器端按实际 canvas 尺寸还原，适配任意屏幕
@@ -183,7 +183,7 @@ async function computeLayout(spec) {
       source: nd.source,
       url: nd.url,
       page: nd.page,
-      galaxy: nd.galaxy
+      knowlink: nd.knowlink
     })),
     galaxies: state.galaxies.map(g => ({
       id: g.id,
@@ -198,7 +198,7 @@ async function computeLayout(spec) {
 }
 
 // ==================== 内联核心（自包含 HTML） ====================
-// 把 utils.js + galaxy-core.js 转成普通脚本内联进 HTML，
+// 把 utils.js + knowlink-core.js 转成普通脚本内联进 HTML，
 // 避免 file:// 下 ES module 的 CORS 限制，实现真正自包含。
 function inlineCore() {
   // utils.js：去掉 export 前缀
@@ -207,20 +207,20 @@ function inlineCore() {
     .replace(/export var /g, 'var ')
     .replace(/export function /g, 'function ');
 
-  // galaxy-core.js：去掉 import 行 + export shim，挂到 window.GalaxyCore
-  let core = fs.readFileSync(path.join(skillRoot, 'lib', 'galaxy-core.js'), 'utf8');
+  // knowlink-core.js：去掉 import 行 + export shim，挂到 window.KnowlinkCore
+  let core = fs.readFileSync(path.join(skillRoot, 'lib', 'knowlink-core.js'), 'utf8');
   core = core.replace(/import \{ assignSourceColors, SOURCE_COLORS \} from '\.\/utils\.js';\n?/, '');
   // 从 export shim 处截断（字符串定位，比正则可靠），再追加内联 shim
   const shimIdx = core.indexOf('export {');
   if (shimIdx >= 0) core = core.substring(0, shimIdx);
   core += `// ====================================================================
-//  Galaxy Page 内联导出 shim（由 galaxy-page render 注入）
+//  Knowlink Page 内联导出 shim（由 knowlink-page render 注入）
 // ====================================================================
-window.GalaxyCore = {
-  buildGalaxyGraph, detectGalaxies, computeGalaxyLayout, runGalaxyForceSimulation,
+window.KnowlinkCore = {
+  buildKnowlinkGraph, detectGalaxies, computeKnowlinkLayout, runKnowlinkForceSimulation,
   addNodesToGraph, relaxNewNodes, findNodeAt, computeStrength, getEdgeNarrative,
-  renderGalaxy, getGalaxyTheme, setGalaxyTheme, GALAXY_THEMES,
-  getGalaxyState: function () {
+  renderKnowlink, getKnowlinkTheme, setKnowlinkTheme, KNOWLINK_THEMES,
+  getKnowlinkState: function () {
     return { graphNodes: graphNodes, graphEdges: graphEdges, galaxies: galaxies };
   }
 };`;
@@ -271,7 +271,7 @@ function renderHtml(spec, layout) {
     .replace(/__ZOOM_OUT__/g, L.zoomOut)
     .replace(/__ZOOM_RESET__/g, L.zoomReset)
     .replace(/__TRACE_SOURCE__/g, L.traceSource)
-    .replace(/__GALAXY_DATA_JSON__/g, () => JSON.stringify(data))
+    .replace(/__KNOWLINK_DATA_JSON__/g, () => JSON.stringify(data))
     .replace(/__UTILS_INLINE__/g, () => utils)
     .replace(/__CORE_INLINE__/g, () => core);
 
@@ -292,10 +292,10 @@ function escapeHtml(str) {
 // ==================== 命令分发 ====================
 function usage() {
   return `Usage:
-  galaxy-page validate <input.json> [--json]
-  galaxy-page render   <input.json> [output.html] [--json]
-  galaxy-page demo     [output-directory]
-  galaxy-page doctor
+  knowlink-page validate <input.json> [--json]
+  knowlink-page render   <input.json> [output.html] [--json]
+  knowlink-page demo     [output-directory]
+  knowlink-page doctor
 `;
 }
 
@@ -309,10 +309,10 @@ async function main() {
   }
 
   if (cmd === 'doctor') {
-    console.log('galaxy-page doctor:');
+    console.log('knowlink-page doctor:');
     console.log('  skill root:', skillRoot);
     console.log('  template:', fs.existsSync(path.join(skillRoot, 'assets', 'template.html')) ? '✅' : '❌');
-    console.log('  galaxy-core:', fs.existsSync(path.join(skillRoot, 'lib', 'galaxy-core.js')) ? '✅' : '❌');
+    console.log('  knowlink-core:', fs.existsSync(path.join(skillRoot, 'lib', 'knowlink-core.js')) ? '✅' : '❌');
     console.log('  utils:', fs.existsSync(path.join(skillRoot, 'lib', 'utils.js')) ? '✅' : '❌');
     console.log('  schema:', fs.existsSync(path.join(skillRoot, 'schemas', 'page.schema.json')) ? '✅' : '❌');
     return;

@@ -19,12 +19,12 @@
 ### edges
 - 可选。不提供时引擎自动计算。
 - `from` / `to`：point id，必须存在（校验会查）。
-- `strength`：1-100。≥15 参与星系聚类。
+- `strength`：1-100。≥15 参与知识簇聚类。
 - `reason`：`same-source` / `same-domain` / `keyword-overlap` / `ai-inferred`。影响边样式（金实线/蓝虚点/白虚线/紫虚线）。
 
 ### config
 - `theme`：`dark`（默认）/ `light`（模板当前只实现 dark，light 待做）。
-- `width` / `height`：布局逻辑尺寸（默认 1200×800）。影响星系网格和螺旋臂半径。
+- `width` / `height`：布局逻辑尺寸（默认 1200×800）。影响知识簇网格和螺旋布局半径。
 - `showSearch` / `showLegend` / `showStats`：UI 开关（模板当前全开）。
 - `interactive`：false 时生成静态快照（当前模板未实现，默认交互式）。
 - `seed`：布局种子（缺省用 meta.title hash）。
@@ -33,9 +33,9 @@
 
 | 参数 | 值 | 说明 |
 |---|---|---|
-| 星系聚类阈值 | strength ≥ 15 | 弱边不参与聚类 |
-| 星系网格 padding | 250 | 星系中心间距 |
-| 螺旋臂数量 | `max(2, min(4, ceil(n/6)))` | 每星系 |
+| 知识簇聚类阈值 | strength ≥ 15 | 弱边不参与聚类 |
+| 知识簇网格 padding | 250 | 知识簇中心间距 |
+| 螺旋布局数量 | `max(2, min(4, ceil(n/6)))` | 每知识簇 |
 | 力模拟迭代 | 40，DAMP 0.8 | 布局松弛 |
 | 边理想长度 | `130 - strength*0.7` | 弹簧力 |
 | 节点半径 | `10 + min(importance*2.5, 18) + min(len*0.2, 8)` | 核心节点更大 |
@@ -45,7 +45,7 @@
 如果生成的页面有节点重叠/边穿节点/标签遮挡：
 
 1. **先调数据**：删低价值边（strength < 15 的弱关联）、精简 title 长度。
-2. **再调布局**：增大 `config.width/height`（给星系更多空间）、调整 points 分组。
+2. **再调布局**：增大 `config.width/height`（给知识簇更多空间）、调整 points 分组。
 3. **最后才改引擎**：改 `lib/knowlink-core.js` 的布局参数（如 padding、maxR），改完必须重新 render 验证。
 
 **不要**为了通过而隐藏问题（如 overflow:hidden 裁掉节点）。

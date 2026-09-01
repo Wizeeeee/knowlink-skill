@@ -101,13 +101,13 @@ test('buildKnowlinkGraph: 同源点之间生成边', () => {
   assert.equal(sameSourceEdge.reason, 'same-source');
 });
 
-test('buildKnowlinkGraph: 检测到星系（连通分量）', () => {
+test('buildKnowlinkGraph: 检测到知识簇（连通分量）', () => {
   buildKnowlinkGraph(SAMPLE_POINTS);
   const { galaxies } = getKnowlinkState();
-  // kp-1/kp-2/kp-3 通过同源/同域/关键词相连 → 至少 1 个多节点星系
-  assert.ok(galaxies.length >= 1, `应有星系，实际 ${galaxies.length}`);
+  // kp-1/kp-2/kp-3 通过同源/同域/关键词相连 → 至少 1 个多节点知识簇
+  assert.ok(galaxies.length >= 1, `应有知识簇，实际 ${galaxies.length}`);
   const multiNode = galaxies.find(g => g.nodeIds.length >= 2);
-  assert.ok(multiNode, '应有至少一个多节点星系');
+  assert.ok(multiNode, '应有至少一个多节点知识簇');
 });
 
 test('buildKnowlinkGraph: 空输入 → 空图', () => {

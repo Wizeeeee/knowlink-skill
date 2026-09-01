@@ -316,8 +316,8 @@
     <span class="crumb current" id="crumb-all">__CRUMB_ALL__</span>
     <span class="sep" id="sep-knowlink" style="display:none;">›</span>
     <span class="crumb" id="crumb-knowlink" style="display:none;"></span>
-    <span class="sep" id="sep-star" style="display:none;">›</span>
-    <span class="current" id="crumb-star" style="display:none;"></span>
+    <span class="sep" id="sep-node" style="display:none;">›</span>
+    <span class="current" id="crumb-node" style="display:none;"></span>
   </div>
 
   <!-- 观测画布 -->
@@ -339,10 +339,10 @@
       <button id="btn-reset"    title="__ZOOM_RESET__">↺</button>
     </div>
 
-    <!-- 星体悬浮提示 -->
+    <!-- 节点悬浮提示 -->
     <div id="tooltip"></div>
 
-    <!-- 星体详情面板 -->
+    <!-- 节点详情面板 -->
     <div id="detail-panel">
       <button class="detail-close" id="detail-close">&times;</button>
       <h3 id="detail-title"></h3>
@@ -392,9 +392,9 @@
   const detailPanel = document.getElementById('detail-panel');
   const crumbAll = document.getElementById('crumb-all');
   const crumbKnowlink = document.getElementById('crumb-knowlink');
-  const crumbStar = document.getElementById('crumb-star');
+  const crumbNode = document.getElementById('crumb-node');
   const sepKnowlink = document.getElementById('sep-knowlink');
-  const sepStar = document.getElementById('sep-star');
+  const sepNode = document.getElementById('sep-node');
 
   // ---- 状态 ----
   let graphNodes = [];
@@ -548,17 +548,17 @@
       crumbKnowlink.style.display = '';
       crumbKnowlink.textContent = '🌀 ' + (galName || '');
       sepKnowlink.style.display = '';
-      crumbStar.style.display = '';
-      crumbStar.textContent = '⭐ ' + (nd ? nd.label : '');
-      sepStar.style.display = '';
+      crumbNode.style.display = '';
+      crumbNode.textContent = '⭐ ' + (nd ? nd.label : '');
+      sepNode.style.display = '';
       crumbAll.classList.remove('current');
       crumbKnowlink.classList.remove('current');
-      crumbStar.classList.add('current');
+      crumbNode.classList.add('current');
     } else {
       crumbKnowlink.style.display = 'none';
-      crumbStar.style.display = 'none';
+      crumbNode.style.display = 'none';
       sepKnowlink.style.display = 'none';
-      sepStar.style.display = 'none';
+      sepNode.style.display = 'none';
       crumbAll.classList.add('current');
     }
   }

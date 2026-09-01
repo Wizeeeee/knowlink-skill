@@ -1,6 +1,6 @@
 ---
 name: knowlink-page
-description: "基于 KnowLink 知识星系引擎生成自包含交互式 HTML 知识图谱页面。输入 typed JSON 规范（知识点 + 边 + 页面配置），输出可分享的星系可视化页面（Canvas 渲染、缩放/平移/搜索/详情面板）。复用 knowlink-core.js 布局+渲染引擎，Node 端预计算布局坐标。当用户要求把知识点/概念/主题可视化为知识图谱页面、生成报告/演示用星系图、或把 JSON 数据变成交互式 HTML 时使用。"
+description: "基于 KnowLink 知识星系引擎生成自包含交互式 HTML 知识图谱页面。输入 typed JSON 规范（知识点 + 边 + 页面配置），输出可分享的知识簇可视化页面（Canvas 渲染、缩放/平移/搜索/详情面板）。复用 knowlink-core.js 布局+渲染引擎，Node 端预计算布局坐标。当用户要求把知识点/概念/主题可视化为知识图谱页面、生成报告/演示用知识簇图、或把 JSON 数据变成交互式 HTML 时使用。"
 metadata:
   version: "1.0"
   last_updated: "2026-08-29"
@@ -8,7 +8,7 @@ metadata:
 
 # Knowlink Page — 知识星系页面生成器
 
-把"知识点数据"变成"可分享的交互式星系页面"。输入 JSON 规范，输出自包含 HTML（内联数据 + 预计算布局坐标，浏览器端用 knowlink-core.js 渲染）。
+把"知识点数据"变成"可分享的交互式知识簇页面"。输入 JSON 规范，输出自包含 HTML（内联数据 + 预计算布局坐标，浏览器端用 knowlink-core.js 渲染）。
 
 ## 快速路径（Fast authoring path）
 
@@ -23,7 +23,7 @@ metadata:
    node bin/knowlink-page.mjs render <input.json> [output.html]
    ```
    输出自包含 HTML。Node 端预计算布局坐标（确定性，seeded RNG），浏览器端直接渲染。
-4. **交付**：打开 HTML 验证。报告 `spec sha256` + `html sha256` + 节点/星系数量。
+4. **交付**：打开 HTML 验证。报告 `spec sha256` + `html sha256` + 节点/知识簇数量。
 
 ## 命令
 
@@ -54,7 +54,7 @@ metadata:
 1. **title 是节点标签**：≤5 词最佳（渲染时截断）。text 用于关键词连线和详情面板。
 2. **id 稳定**：显式边引用 point id。缺省自动生成 `kp-<i>`。
 3. **边可选**：不写 edges 时引擎自动计算（同源 100 / 同域 75 / 关键词重叠 5-60）。显式边用 `ai-inferred` 语义。
-4. **strength 1-100**：决定边粗细和星系聚类（≥15 参与聚类）。
+4. **strength 1-100**：决定边粗细和知识簇聚类（≥15 参与聚类）。
 5. **locale 只影响 Viewer UI**：`zh-CN` / `en`。其他语言用 `zh-CN` 并说明。
 6. **≤200 个点**：超过会警告。大图建议精简或分组。
 7. **确定性**：相同输入产生相同布局（seeded RNG），可做 golden 测试。

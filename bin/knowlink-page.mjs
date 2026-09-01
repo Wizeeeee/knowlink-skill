@@ -235,7 +235,7 @@ function renderHtml(spec, layout) {
   const isEn = locale === 'en';
 
   const L = {
-    searchPlaceholder: isEn ? 'Search stars...' : '搜索星体...',
+    searchPlaceholder: isEn ? 'Search stars...' : '搜索节点...',
     statsLoading: isEn ? 'Loading...' : '加载中...',
     crumbAll: isEn ? 'All' : '全部',
     legendStar: isEn ? 'Node' : '节点',
@@ -380,7 +380,7 @@ async function main() {
       }, null, 2));
     } else {
       console.log('✅ 已生成:', output);
-      console.log('   节点:', layout.nodes.length, '· 星系:', layout.galaxies.length);
+      console.log('   节点:', layout.nodes.length, '· 知识簇:', layout.galaxies.length);
       console.log('   HTML:', Buffer.byteLength(html), 'bytes');
     }
     return;

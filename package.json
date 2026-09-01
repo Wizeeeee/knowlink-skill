@@ -1,7 +1,7 @@
 {
   "name": "knowlink-page",
   "version": "1.0.0",
-  "description": "把知识点数据变成可分享的交互式星系页面 — 输入 typed JSON 规范，输出自包含 HTML",
+  "description": "把知识点数据变成可分享的交互式知识簇页面 — 输入 typed JSON 规范，输出自包含 HTML",
   "type": "module",
   "bin": {
     "knowlink-page": "bin/knowlink-page.mjs"

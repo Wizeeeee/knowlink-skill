@@ -4,6 +4,7 @@ examples/out/
 # Node
 node_modules/
 *.log
+*.tgz
 
 # 系统
 .DS_Store

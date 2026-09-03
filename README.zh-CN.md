@@ -29,10 +29,10 @@ node bin/knowlink-page.mjs render examples/demo.json out/demo.html
 node bin/knowlink-page.mjs demo
 ```
 
-### 通过 npm 使用（可选）
+### 通过 npm 使用（推荐）
 
 ```bash
-npm install -g .
+npm install -g knowlink-page
 knowlink-page validate examples/demo.json
 knowlink-page render examples/demo.json out/demo.html
 ```
@@ -120,6 +120,18 @@ npm test
 
 # 生成示例
 npm run demo
+```
+
+### 发布到 npm
+
+包以 **`knowlink-page`** 名称发布到 npm registry。
+
+```bash
+# 1. 升级版本号
+npm version patch   # 或 minor / major
+
+# 2. 发布（prepublishOnly 会自动先跑 npm test）
+npm publish
 ```
 
 ## 贡献

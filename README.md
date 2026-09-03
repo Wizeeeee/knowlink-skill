@@ -29,10 +29,10 @@ node bin/knowlink-page.mjs render examples/demo.json out/demo.html
 node bin/knowlink-page.mjs demo
 ```
 
-### Via npm (optional)
+### Via npm (recommended)
 
 ```bash
-npm install -g .
+npm install -g knowlink-page
 knowlink-page validate examples/demo.json
 knowlink-page render examples/demo.json out/demo.html
 ```
@@ -120,6 +120,18 @@ npm test
 
 # Generate demo
 npm run demo
+```
+
+### Publishing to npm
+
+The package is published as **`knowlink-page`** on the npm registry.
+
+```bash
+# 1. Bump the version
+npm version patch   # or minor / major
+
+# 2. Publish (runs `npm test` automatically via prepublishOnly)
+npm publish
 ```
 
 ## Contributing

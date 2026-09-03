@@ -18,7 +18,8 @@
   "scripts": {
     "demo": "node bin/knowlink-page.mjs demo",
     "validate": "node bin/knowlink-page.mjs validate examples/demo.json",
-    "test": "node --test"
+    "test": "node --test",
+    "prepublishOnly": "npm test"
   },
   "engines": {
     "node": ">=18"
@@ -30,5 +31,16 @@
     "canvas",
     "cli"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wizeeeee/knowlink-skill.git"
+  },
+  "homepage": "https://github.com/Wizeeeee/knowlink-skill",
+  "bugs": {
+    "url": "https://github.com/Wizeeeee/knowlink-skill/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

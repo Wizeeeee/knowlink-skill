@@ -1,33 +1,35 @@
-# Knowlink Page — 知识星系页面生成器
+# Knowlink Page — Knowledge Galaxy Page Generator
 
-> 把"知识点数据"变成"可分享的交互式节点页面"。
-> 输入 typed JSON 规范，输出自包含 HTML（内联数据 + 预计算布局坐标，浏览器端用 knowlink-core.js 渲染）。
+> Turn "knowledge point data" into "shareable interactive node pages".
+> Input a typed JSON spec, output a self-contained HTML file (inline data + precomputed layout coordinates, rendered in-browser by `knowlink-core.js`).
 
-![License](https://img.shields.io/badge/license-MIT-green)
-![Node](https://img.shields.io/badge/node-%3E%3D18-green)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-green)](https://nodejs.org)
 
-## ✨ 特性
+[中文文档](./README.zh-CN.md) · [KnowLink View (Chrome Extension)](https://github.com/Wizeeeee/knowlink-view)
 
-- **零依赖**：CLI 只用 Node 内置模块，浏览器端无任何外部依赖
-- **确定性渲染**：seeded RNG，相同输入产生相同布局（可做 golden 测试）
-- **Schema 校验**：输入 JSON 先过校验，错误精确到字段
-- **自包含输出**：单个 HTML 文件，内联数据 + 样式 + 引擎，可离线分享
-- **Canvas 渲染**：缩放 / 平移 / 搜索 / 详情面板
+## Features
 
-## 🚀 快速开始
+- **Zero dependencies**: the CLI only uses Node built-in modules; the browser side has no external dependencies
+- **Deterministic rendering**: seeded RNG — the same input always produces the same layout (golden-test friendly)
+- **Schema validation**: input JSON is validated first, errors point to the exact field
+- **Self-contained output**: a single HTML file with inline data + styles + engine, shareable offline
+- **Canvas rendering**: zoom / pan / search / detail panel
+
+## Quick Start
 
 ```bash
-# 校验输入规范
+# Validate the input spec
 node bin/knowlink-page.mjs validate examples/demo.json
 
-# 渲染为自包含 HTML
+# Render a self-contained HTML
 node bin/knowlink-page.mjs render examples/demo.json out/demo.html
 
-# 生成示例页面
+# Generate the demo page
 node bin/knowlink-page.mjs demo
 ```
 
-### 通过 npm 使用（可选）
+### Via npm (optional)
 
 ```bash
 npm install -g .
@@ -35,22 +37,22 @@ knowlink-page validate examples/demo.json
 knowlink-page render examples/demo.json out/demo.html
 ```
 
-## 📖 命令
+## Commands
 
-| 命令 | 用途 |
+| Command | Purpose |
 |---|---|
-| `validate <input.json> [--json]` | Schema 校验（零依赖手写检查），exit 0 才通过 |
-| `render <input.json> [output.html] [--json]` | 生成自包含 HTML |
-| `demo [out-dir]` | 生成示例页面（默认 `examples/out/demo.html`） |
-| `doctor` | 检查 skill 资产完整性 |
+| `validate <input.json> [--json]` | Schema validation (hand-written, zero-dependency), exit 0 means pass |
+| `render <input.json> [output.html] [--json]` | Generate a self-contained HTML |
+| `demo [out-dir]` | Generate the demo page (default `examples/out/demo.html`) |
+| `doctor` | Check skill asset integrity |
 
-## 📝 输入规范
+## Input Spec
 
 ```json
 {
-  "meta": { "title": "标题", "subtitle": "可选", "locale": "zh-CN|en" },
+  "meta": { "title": "Title", "subtitle": "optional", "locale": "zh-CN|en" },
   "points": [
-    { "id": "kp-1", "title": "短标题", "text": "详情文本", "url": "来源", "source": "来源名" }
+    { "id": "kp-1", "title": "Short title", "text": "Detail text", "url": "source", "source": "source name" }
   ],
   "edges": [
     { "from": "kp-1", "to": "kp-2", "strength": 80, "reason": "ai-inferred" }
@@ -59,67 +61,71 @@ knowlink-page render examples/demo.json out/demo.html
 }
 ```
 
-完整字段语义见 [references/authoring-contract.md](./references/authoring-contract.md)，JSON Schema 见 [schemas/page.schema.json](./schemas/page.schema.json)。
+Full field semantics: [references/authoring-contract.md](./references/authoring-contract.md) · JSON Schema: [schemas/page.schema.json](./schemas/page.schema.json)
 
-### 编写守则
+### Authoring Rules
 
-1. **title 是节点标签**：≤5 词最佳（渲染时截断）。text 用于关键词连线和详情面板。
-2. **id 稳定**：显式边引用 point id。缺省自动生成 `kp-<i>`。
-3. **边可选**：不写 edges 时引擎自动计算（同源 100 / 同域 75 / 关键词重叠 5-60）。
-4. **strength 1-100**：决定边粗细和知识簇聚类（≥15 参与聚类）。
-5. **≤200 个点**：超过会警告。大图建议精简或分组。
+1. **`title` is the node label**: ≤5 words is best (truncated at render time). `text` is used for keyword edges and the detail panel.
+2. **Stable `id`**: explicit edges reference point ids. Defaults to `kp-<i>` when omitted.
+3. **Edges are optional**: when omitted, the engine computes them automatically (same-source 100 / same-domain 75 / keyword overlap 5-60).
+4. **`strength` 1-100**: controls edge thickness and galaxy clustering (≥15 participates in clustering).
+5. **≤200 points**: more triggers a warning. Prefer trimming or grouping large graphs.
 
-## 🏗️ 架构
+## Architecture
 
 ```
-用户需求 → 写 JSON 规范
+User requirement → write JSON spec
     ↓
-validate（schema 校验）
+validate (schema check)
     ↓
-render（Node 端跑布局 → 坐标序列化 → 注入模板）
+render (Node-side layout → serialize coordinates → inject template)
     ↓
-自包含 HTML（内联 knowlink-core.js + 数据 + 样式）
+Self-contained HTML (inline knowlink-core.js + data + styles)
 ```
 
 ```
 knowlink-skill/
-├── SKILL.md                    Skill 定义（agent 使用入口）
+├── SKILL.md                    Skill definition (agent entry point)
 ├── bin/
-│   └── knowlink-page.mjs         CLI（validate / render / demo / doctor）
+│   └── knowlink-page.mjs         CLI (validate / render / demo / doctor)
 ├── lib/
-│   ├── knowlink-core.js          布局 + 渲染核心（Node 端预计算 + 浏览器端渲染）
-│   └── utils.js                共享工具
+│   ├── knowlink-core.js          Layout + render core (Node precompute + browser render)
+│   └── utils.js                Shared utilities
 ├── assets/
-│   └── template.html           页面模板
+│   └── template.html           Page template
 ├── schemas/
-│   └── page.schema.json        输入规范 JSON Schema
+│   └── page.schema.json        Input spec JSON Schema
 ├── references/
-│   └── authoring-contract.md   字段语义 / 布局参数 / 修复顺序
+│   └── authoring-contract.md   Field semantics / layout params / fix order
 └── examples/
-    ├── demo.json               示例输入（深度学习概念图谱）
-    └── out/                    生成物（gitignore，不入库）
+    ├── demo.json               Example input (deep learning concept graph)
+    └── out/                    Generated output (gitignored)
 ```
 
-## 🧠 设计要点
+## Design Notes
 
-- **布局与渲染分离**：布局函数不碰 DOM → Node 端可预计算坐标；渲染函数浏览器端执行
-- **确定性**：seeded RNG，相同输入产生相同布局，可做 golden 测试
-- **零依赖**：`knowlink-page.mjs` 只用 `node:crypto` / `node:fs` / `node:path`
+- **Layout/render separation**: layout functions never touch the DOM → coordinates can be precomputed in Node; render functions run in the browser
+- **Deterministic**: seeded RNG, same input → same layout, golden-test friendly
+- **Zero dependencies**: `knowlink-page.mjs` only uses `node:crypto` / `node:fs` / `node:path`
 
-## 🛠️ 开发
+## Related Projects
+
+- **[KnowLink View](https://github.com/Wizeeeee/knowlink-view)** — Chrome extension (Manifest V3) for collecting, managing and visualizing knowledge points in the browser. This skill generates shareable HTML pages from the same knowledge-point data model.
+
+## Development
 
 ```bash
-# 运行测试
+# Run tests
 npm test
 
-# 生成示例
+# Generate demo
 npm run demo
 ```
 
-## 🤝 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request！请先阅读 [CONTRIBUTING.md](../CONTRIBUTING.md)。
+Issues and Pull Requests are welcome!
 
-## 📄 License
+## License
 
 [MIT](./LICENSE)

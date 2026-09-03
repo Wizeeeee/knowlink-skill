@@ -5,6 +5,8 @@
 
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-green)](https://nodejs.org)
+[![npm version](https://img.shields.io/npm/v/knowlink-page.svg)](https://www.npmjs.com/package/knowlink-page)
+[![npm downloads](https://img.shields.io/npm/dm/knowlink-page.svg)](https://www.npmjs.com/package/knowlink-page)
 
 [中文文档](./README.zh-CN.md) · [KnowLink View (Chrome Extension)](https://github.com/Wizeeeee/knowlink-view)
 
@@ -32,15 +34,22 @@ node bin/knowlink-page.mjs demo
 ### Via npm (recommended)
 
 ```bash
+# Install globally
 npm install -g knowlink-page
+
+# Validate the input spec
 knowlink-page validate examples/demo.json
+
+# Render a self-contained HTML
 knowlink-page render examples/demo.json out/demo.html
 ```
+
+> Package: [`knowlink-page`](https://www.npmjs.com/package/knowlink-page) on npm registry
 
 ## Commands
 
 | Command | Purpose |
-|---|---|
+| --- | --- |
 | `validate <input.json> [--json]` | Schema validation (hand-written, zero-dependency), exit 0 means pass |
 | `render <input.json> [output.html] [--json]` | Generate a self-contained HTML |
 | `demo [out-dir]` | Generate the demo page (default `examples/out/demo.html`) |
@@ -73,7 +82,7 @@ Full field semantics: [references/authoring-contract.md](./references/authoring-
 
 ## Architecture
 
-```
+```text
 User requirement → write JSON spec
     ↓
 validate (schema check)
@@ -83,7 +92,7 @@ render (Node-side layout → serialize coordinates → inject template)
 Self-contained HTML (inline knowlink-core.js + data + styles)
 ```
 
-```
+```text
 knowlink-skill/
 ├── SKILL.md                    Skill definition (agent entry point)
 ├── bin/

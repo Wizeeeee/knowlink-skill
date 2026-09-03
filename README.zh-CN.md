@@ -5,6 +5,8 @@
 
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-green)
+[![npm version](https://img.shields.io/npm/v/knowlink-page.svg)](https://www.npmjs.com/package/knowlink-page)
+[![npm downloads](https://img.shields.io/npm/dm/knowlink-page.svg)](https://www.npmjs.com/package/knowlink-page)
 
 [English](./README.md) · [KnowLink View（Chrome 扩展）](https://github.com/Wizeeeee/knowlink-view)
 
@@ -32,15 +34,22 @@ node bin/knowlink-page.mjs demo
 ### 通过 npm 使用（推荐）
 
 ```bash
+# 全局安装
 npm install -g knowlink-page
+
+# 校验输入规范
 knowlink-page validate examples/demo.json
+
+# 渲染为自包含 HTML
 knowlink-page render examples/demo.json out/demo.html
 ```
+
+> 包名：[`knowlink-page`](https://www.npmjs.com/package/knowlink-page)（npm registry）
 
 ## 命令
 
 | 命令 | 用途 |
-|---|---|
+| --- | --- |
 | `validate <input.json> [--json]` | Schema 校验（零依赖手写检查），exit 0 才通过 |
 | `render <input.json> [output.html] [--json]` | 生成自包含 HTML |
 | `demo [out-dir]` | 生成示例页面（默认 `examples/out/demo.html`） |
@@ -73,7 +82,7 @@ knowlink-page render examples/demo.json out/demo.html
 
 ## 架构
 
-```
+```text
 用户需求 → 写 JSON 规范
     ↓
 validate（schema 校验）
@@ -83,7 +92,7 @@ render（Node 端跑布局 → 坐标序列化 → 注入模板）
 自包含 HTML（内联 knowlink-core.js + 数据 + 样式）
 ```
 
-```
+```text
 knowlink-skill/
 ├── SKILL.md                    Skill 定义（agent 使用入口）
 ├── bin/
